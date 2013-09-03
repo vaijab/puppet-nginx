@@ -1,0 +1,76 @@
+#
+# This file is managed by puppet class 'nginx::vhost'
+# 
+# nginx vhost config for <%= @title %>
+#
+server {
+<%
+listen.each do |port|
+-%>
+  listen <%= port %>;
+<%
+end
+if @server_name.kind_of?(Array)
+-%>
+  server_name <%= @server_name.join(' ') %>;
+<%
+else
+-%>
+  server_name <%= @server_name %>;
+<%
+end
+-%>
+
+  access_log <%= @access_log %>;
+  error_log <%= @error_log %>;
+
+<% if @ssl_certificate and @ssl_certificate_key -%>
+  ssl_certificate <%= @ssl_certificate %>;
+  ssl_certificate_key <%= @ssl_certificate_key %>;
+  ssl_ciphers <%= @ssl_ciphers %>;
+
+<% end -%>
+  charset <%= @charset %>;
+<%# TODO: need to be able to specify multiple include directives. -%>
+<% if @include -%>
+  include <%= @include %>;
+<% end -%>
+  index <%= @index %>;
+  autoindex <%= @autoindex %>;
+  keepalive_timeout <%= @keepalive_timeout %>;
+  gzip <%= @gzip %>;
+<% if @root -%>
+  root <%= @root %>;
+<% end -%>
+<% if @return -%>
+  return <%= @return %>;
+<% end -%>
+
+<%
+if @locations
+  @locations.each do |loc|
+-%>
+  location <%= loc['name'] %> {
+<%
+    loc.each do |key, values|
+      if key != 'name'
+        if values.kind_of?(Array)
+          values.each do |value| -%>
+    <%= key %> <%= value -%>;
+<%
+          end
+        else
+-%>
+    <%= key %> <%= values -%>;
+<%
+        end
+      end
+    end
+-%>
+  }
+
+<%
+  end
+end
+-%>
+}

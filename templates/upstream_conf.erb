@@ -1,0 +1,50 @@
+#
+# This file is managed by puppet class 'nginx::upstream'
+#
+# Nginx upstream configuration for '<%= @title %>'
+#
+<%
+if @server
+-%>
+upstream <%= @title %> {
+<%
+  if @ip_hash
+-%>
+  ip_hash;
+<%
+  end
+  if @keepalive
+-%>
+  keepalive <%= @keepalive %>;
+<%
+  end
+  if @least_conn
+-%>
+  least_conn;
+<%
+  end
+  @server.each do |s|
+-%>
+  server <%= s %>;
+<%
+  end
+  if @check
+-%>
+  check <%= @check %>;
+<%
+  end
+  if @check_http_send
+-%>
+  check_http_send <%= @check_http_send %>;
+<%
+  end
+  if @check_http_expect_alive
+-%>
+  check_http_expect_alive <%= @check_http_expect_alive %>;
+<%
+  end
+-%>
+}
+<%
+end
+-%>
