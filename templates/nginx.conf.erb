@@ -5,15 +5,24 @@
 #
 user <%= @user %>;
 worker_processes <%= @worker_processes %>;
+worker_rlimit_nofile <%= @worker_rlimit_nofile %>;
 
 error_log <%= @error_log %>;
 pid /var/run/nginx.pid;
 
 events {
   worker_connections <%= @worker_connections %>;
+  multi_accept on;
 }
 
 http {
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+  reset_timedout_connection <%= @reset_timedout_connection %>;
+
+  server_tokens <%= @server_tokens %>;
+
   include /etc/nginx/mime.types;
   default_type application/octet-stream;
 
@@ -45,10 +54,14 @@ end
                   '$status $body_bytes_sent "$http_referer" '
                   '"$http_user_agent" "$http_x_forwarded_for"';
 
+  log_format extended_timed '$remote_addr - $remote_user [$time_local] "$request" '
+                  '$status $body_bytes_sent "$http_referer" "$http_user_agent" '
+                  '"$http_x_forwarded_for" $request_time $upstream_response_time '
+                  '$upstream_addr $upstream_status $scheme "$http_cookie"';
+
   access_log <%= @access_log %>;
   error_log <%= @error_log %>;
 
-  sendfile on;
   keepalive_timeout <%= @keepalive_timeout %>;
 
   gzip <%= @gzip %>;
@@ -57,10 +70,19 @@ end
   include <%= @vhost_dir %>/*.conf;
 <%
 if @include
-  include.each do |incl| -%>
-  include <%= incl %>;
+  @include.each do |values|
+    if values.kind_of?(Array)
+      values.each do |value|
+-%>
+  include <%= value -%>;
 <%
+      end
+    else
+-%>
+  include <%= values -%>;
+<%
+    end
   end
-end
+end  
 -%>
 }

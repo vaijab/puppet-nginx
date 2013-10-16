@@ -31,14 +31,29 @@ end
 
 <% end -%>
   charset <%= @charset %>;
-<%# TODO: need to be able to specify multiple include directives. -%>
-<% if @include -%>
-  include <%= @include %>;
-<% end -%>
+<%
+if @include
+  @include.each do |values|
+    if values.kind_of?(Array)
+      values.each do |value|
+-%>
+  include <%= value -%>;
+<%
+      end
+    else
+-%>
+  include <%= values -%>;
+<%
+    end
+  end
+end  
+-%>
   index <%= @index %>;
   autoindex <%= @autoindex %>;
   keepalive_timeout <%= @keepalive_timeout %>;
+  proxy_intercept_errors <%= @proxy_intercept_errors %>;
   gzip <%= @gzip %>;
+  proxy_headers_hash_bucket_size <%= @proxy_headers_hash_bucket_size %>;
 <% if @root -%>
   root <%= @root %>;
 <% end -%>
@@ -52,8 +67,13 @@ if @locations
 -%>
   location <%= loc['name'] %> {
 <%
-    loc.each do |key, values|
+    loc.sort.each do |key, values|
       if key != 'name'
+        if key == 'proxy_pass'
+-%>
+    include proxy_params;
+<%
+        end
         if values.kind_of?(Array)
           values.each do |value| -%>
     <%= key %> <%= value -%>;

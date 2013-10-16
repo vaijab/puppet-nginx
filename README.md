@@ -11,6 +11,7 @@ to prevent from applying incorrect config.
 * [nginx](#nginx)
 * [nginx::upstream](#nginxupstream)
 * [nginx::vhost](#nginxvhost)
+* [nginx::snippet](#nginxsnippet)
 
 ### nginx
 This class installs php and sets up default php.ini file.
@@ -26,7 +27,7 @@ Valid values: `installed`, `absent` or specific package version. Default:
 * `onboot` - Whether to enable to disable the service on boot. Valid values:
 `true` or `false`. Default: `true` - enabled.
 
-* `worker_processes` - How many worker processes nginx should use. Default `1`.
+* `worker_processes` - How many worker processes nginx should use. Default `$::processorcount`.
 
 * `access_log` - Global access log. Default: `/var/log/nginx/access.log main`.
 
@@ -36,6 +37,13 @@ Valid values: `installed`, `absent` or specific package version. Default:
 
 * `worker_connections` - Maximum connections to handle at once per worker process.
 Default: `1024`.
+
+* `worker_rlimit_nofile` - Changes the limit on the maximum number of open files
+(RLIMIT_NOFILE) for worker processes. Used to increase the limit without restarting
+the main process. Default: `1024`.
+
+* `reset_timedout_connection` - Enables or disables resetting timed out connections to free up
+resources consumed by a connection in `FIN_WAIT1` state. Default: `on`.
 
 * `keepalive_timeout` - Keep alive timeout in seconds. Default: `65`.
 
@@ -53,6 +61,8 @@ docs. Default: `undef`.
 
 * `fastcgi_cache_path` - A list of valid `fastcgi_cache_path` parameters. See nginx
 docs. Default: `undef`.
+
+* `server_tokens` - Whether to display nginx version or not. Default: `off`.
 
 
 #### Examples
@@ -148,7 +158,14 @@ configuration files. Default: `undef`.
 
 * `keepalive_timeout` - Keep-alive timeout. Default: `60s`.
 
+* `proxy_intercept_errors` - Determines whether proxied responses with codes greater
+than or equal to 300 should be passed to a client or be redirected to nginx for processing
+with the error_page directive. Default: `off`.
+
 * `gzip` - Whether to turn gzip on. Default: `on`.
+
+* `proxy_headers_hash_bucket_size` - Sets the bucket size for hash tables used
+  by the proxy_hide_header and proxy_set_header directives. Default: `128`.
 
 * `ssl_certificate` - SSL/TLS certificate file location. Default: `undef`.
 
@@ -185,6 +202,33 @@ supports within a location config block. See examples for more details. Default:
               - 'Host $http_host'
           - name: '/foo'
             return: 404
+
+### nginx::snippet
+
+This class allows to configure nginx config snippets which can be then included
+into other configuration parts. These snippets will be dropped in `/etc/nginx/snippet.d`
+with `.conf` file extension by default.
+
+#### Parameters
+* `conf` - A block of text, which needs to be valid nginx configuration. See examples.
+Default: `undef`.
+
+* `filename_prefix` - By default it is set a hash name. But if for some reason you
+want your snippet file name to be different, then use this parameter.
+
+#### Examples
+    ---
+    classes:
+      - nginx::snippet
+    
+    nginx::snippet:
+      'error_code_404':
+        filename_prefix: location_404
+        conf: |
+          location = /apache_404 {
+            internal;
+            add_header Content-Type text/javascript;
+          }
 
 
 ## Authors

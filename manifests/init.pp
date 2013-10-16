@@ -19,20 +19,23 @@
 # - Vaidas Jablonskis <jablonskis@gmail.com>
 #
 class nginx(
-  $service            = 'running',
-  $onboot             = true,
-  $package            = 'installed',
-  $worker_processes   = 1,
-  $access_log         = '/var/log/nginx/access.log main',
-  $error_log          = '/var/log/nginx/error.log warn',
-  $index              = undef,
-  $worker_connections = 1024,
-  $keepalive_timeout  = 65,
-  $gzip               = 'on',
-  $include            = undef,
-  $proxy_cache_path   = undef,
-  $fastcgi_cache_path = undef,
-  $cache_dirs         = [],
+  $service                   = 'running',
+  $onboot                    = true,
+  $package                   = 'installed',
+  $worker_processes          = $::processorcount,
+  $worker_rlimit_nofile      = '1024',
+  $worker_connections        = 1024,
+  $reset_timedout_connection = 'on',
+  $access_log                = '/var/log/nginx/access.log main',
+  $error_log                 = '/var/log/nginx/error.log warn',
+  $index                     = undef,
+  $keepalive_timeout         = 60,
+  $gzip                      = 'on',
+  $include                   = undef,
+  $proxy_cache_path          = undef,
+  $fastcgi_cache_path        = undef,
+  $cache_dirs                = [],
+  $server_tokens             = 'off',
 ) {
   case $::osfamily {
     RedHat: {
@@ -55,6 +58,8 @@ class nginx(
     }
   }
 
+  $snippet_path = '/etc/nginx/snippet.d'
+
   $config_file   = '/etc/nginx/nginx.conf'
   $conf_template = 'nginx.conf.erb'
 
@@ -69,6 +74,16 @@ class nginx(
     group   => 'root',
     content => template("${module_name}/${conf_template}"),
     require => Package[$package_name],
+  }
+
+  file { $snippet_path:
+    ensure  => directory,
+    mode    => '0644',
+    owner   => 'root',
+    group   => 'root',
+    require => Package[$package_name],
+    purge   => true,
+    recurse => true,
   }
 
   file { $vhost_dir:
