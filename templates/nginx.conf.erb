@@ -54,10 +54,29 @@ end
                   '$status $body_bytes_sent "$http_referer" '
                   '"$http_user_agent" "$http_x_forwarded_for"';
 
-  log_format extended_timed '$remote_addr - $remote_user [$time_local] "$request" '
-                  '$status $body_bytes_sent "$http_referer" "$http_user_agent" '
+  log_format extended '$remote_addr - $remote_user [$time_iso8601] $host '
+                  '$request_method "$request_uri" $status $body_bytes_sent '
+                  '"$http_referer" "$http_user_agent" '
                   '"$http_x_forwarded_for" $request_time $upstream_response_time '
                   '$upstream_addr $upstream_status $scheme "$http_cookie"';
+
+  log_format extended_json '{"remote_addr": "$remote_addr", '
+    '"host": "$host", '
+    '"remote_user": "$remote_user", '
+    '"timestamp": "$time_iso8601", '
+    '"request_uri": "$request_uri", '
+    '"request_method": "$request_method", '
+    '"status": "$status", '
+    '"body_bytes_sent": "$body_bytes_sent", '
+    '"http_referer": "$http_referer", '
+    '"http_user_agent": "$http_user_agent", '
+    '"http_x_forwarded_for": "$http_x_forwarded_for", '
+    '"request_time": "$request_time", '
+    '"upstream_response_time": "$upstream_response_time", '
+    '"upstream_addr": "$upstream_addr", '
+    '"upstream_status": "$upstream_status", '
+    '"scheme": "$scheme", '
+    '"http_cookie": "$http_cookie"}';
 
   access_log <%= @access_log %>;
   error_log <%= @error_log %>;
@@ -83,6 +102,6 @@ if @include
 <%
     end
   end
-end  
+end
 -%>
 }
