@@ -14,7 +14,7 @@ to prevent from applying incorrect config.
 * [nginx::snippet](#nginxsnippet)
 
 ### nginx
-This class installs php and sets up default php.ini file.
+This class installs nginx and sets up default nginx.conf file.
 
 #### Parameters
 * `package` - Used to specify what version of the package should be used.
