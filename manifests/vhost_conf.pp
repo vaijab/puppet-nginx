@@ -36,6 +36,7 @@ define nginx::vhost_conf(
     $ssl_certificate                = undef,
     $ssl_certificate_key            = undef,
     $ssl_ciphers                    = 'HIGH:!aNULL:!MD5',
+    $ssl_protocols                  = 'TLSv1 TLSv1.1 TLSv1.2',
     $locations                      = undef,
   ) {
 
