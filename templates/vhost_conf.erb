@@ -69,11 +69,6 @@ if @locations
 <%
     loc.sort.each do |key, values|
       if key != 'name'
-        if key == 'proxy_pass'
--%>
-    include proxy_params;
-<%
-        end
         if values.kind_of?(Array)
           values.each do |value| -%>
     <%= key %> <%= value -%>;
