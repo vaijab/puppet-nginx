@@ -35,7 +35,8 @@ define nginx::vhost_conf(
     $proxy_headers_hash_bucket_size = 128,
     $ssl_certificate                = undef,
     $ssl_certificate_key            = undef,
-    $ssl_ciphers                    = 'ALL:!kEDH!ADH:RC4+RSA:+HIGH:+MEDIUM:+SSLv2:+EXP',
+    $ssl_ciphers                    = 'HIGH:!aNULL:!MD5',
+    $ssl_protocols                  = 'TLSv1 TLSv1.1 TLSv1.2',
     $locations                      = undef,
   ) {
 

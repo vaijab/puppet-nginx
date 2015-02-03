@@ -28,6 +28,7 @@ end
   ssl_certificate <%= @ssl_certificate %>;
   ssl_certificate_key <%= @ssl_certificate_key %>;
   ssl_ciphers <%= @ssl_ciphers %>;
+  ssl_protocols <%= @ssl_protocols %>;
 
 <% end -%>
   charset <%= @charset %>;
@@ -69,7 +70,7 @@ if @locations
 <%
     loc.sort.each do |key, values|
       if key != 'name'
-        if key == 'proxy_pass'
+        if key == 'proxy_pass' and @osfamily == 'Debian'
 -%>
     include proxy_params;
 <%
