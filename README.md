@@ -178,6 +178,12 @@ Default: `HIGH:!aNULL:!MD5`.
 work only when the OpenSSL library of version 1.0.1 or higher is used.
 Default: `TLSv1 TLSv1.1 TLSv1.2`.
 
+* `ssl_client_certificate` - Specifies a file with trusted CA certificates in the PEM format used to verify client certificates. Default: `undef`
+
+* `ssl_verify_client` - Enables verification of client certificates. Default: `off`
+
+* `ssl_verify_depth` - Sets the verification depth in the client certificates chain. Default: `1`
+
 * `locations` - This parameter takes an array of hashes. The `name` parameter is what
 defines an actual location, the rest of parameters of the hash can be anything that nginx
 supports within a location config block. See examples for more details. Default: `undef`.

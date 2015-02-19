@@ -29,8 +29,13 @@ end
   ssl_certificate_key <%= @ssl_certificate_key %>;
   ssl_ciphers <%= @ssl_ciphers %>;
   ssl_protocols <%= @ssl_protocols %>;
-
 <% end -%>
+<% if @ssl_verify_client == 'on' and @ssl_client_certificate -%>
+  ssl_verify_client <%= @ssl_verify_client %>;
+  ssl_verify_depth <%= @ssl_verify_depth %>;
+  ssl_client_certificate <%= @ssl_client_certificate %>;
+<% end -%>
+
   charset <%= @charset %>;
 <%
 if @include
