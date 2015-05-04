@@ -5,7 +5,7 @@
 #
 server {
 <%
-listen.each do |port|
+@listen.each do |port|
 -%>
   listen <%= port %>;
 <%
